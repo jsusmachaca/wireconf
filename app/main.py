@@ -1,46 +1,41 @@
-from os.path import exists as exists_file
-from internal.keys import Keys
-from random import randint
-from os import path
-from internal.db import VerifyDatabase, WireDatase
-
-
-class Wireguard:
-    def __init__(self) -> None:
-        pass
-
-    def server_config_file(self, priv_key: str):
-
-        """ if exists_file('/etc/wireguard/wg0.conf'):
-            print('config file alredy exists')
-            return """
-
-        with open('app/templates/server/server.conf') as file, \
-            open('replaced.conf', 'w') as replaced_file:
-            lines = file.readlines()
-            for line in lines:
-                replaced_priv_key = line.replace('<server private key>', priv_key)
-                replaced_file.write(replaced_priv_key)
-    
-    def create_peer(self, pub_key: str):
-        _, pub_key = Keys.generate_keys()
-        with open('replaced.conf', 'a') as file, open('app/templates/server/peer.conf') as peer_file:
-            lines = peer_file.readlines()
-            for line in lines:
-                replaced_pub_key = line.replace('<client public key>', pub_key)
-                replaced_ipaddress = replaced_pub_key.replace('<private ip client>', f'10.0.0.{randint(2, 254)}/32')
-                file.write(replaced_ipaddress)
-
+from cli.server import ServerCli
+from config.database_config import VerifyDatabase
+import argparse
 
 if __name__ == '__main__':
-    """ peers = 3
-    wire = Wireguard()
-    wire.server_config_file()
-    for i in range(peers):
-        wire.create_peer() """
-    priv_key, pub_key = Keys.generate_keys()
+    vd = VerifyDatabase()
+    vd.verify_or_create()
+    conn = vd.connection()
 
-    w = WireDatase(VerifyDatabase())
-    w.insert_server_key(priv_key, pub_key)
-    w.get_server_keys()
+    server_cli = ServerCli(conn)
 
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers(dest='command', required=True)
+
+    init_parser = subparsers.add_parser('init', help='Initialize config files')
+    init_parser.add_argument('-P', '--peer', type=str, required=True)
+    init_parser.add_argument('-p', '--port', type=int, default=51820)
+
+    peer_parser = subparsers.add_parser('peer', help='Initialize config files')
+    peer_parser.add_argument('-a', '--add', type=str)
+    peer_parser.add_argument('-d', '--delete', type=int)
+
+    args = parser.parse_args()
+
+    if args.command == 'init':
+        if server_cli.create_server(args.port):
+                server_cli.create_peer(args.peer)
+                server_cli.create_client(args.peer, args.port)
+        else:
+            print('Server keys alredy exists')
+
+    if args.command == 'peer':
+        if args.add:
+            if not server_cli.create_peer(args.add):
+                 print(f'Peer {args.add} alredy exists please use another')
+            else:
+                print('Peer created')
+                server_cli.create_client(args.add, 51820)
+
+        if not args.add and not args.delete:
+            parser.error('[-a ADD] or [-d DELETE]is required')
