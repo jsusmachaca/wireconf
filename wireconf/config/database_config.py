@@ -25,6 +25,7 @@ class VerifyDatabase:
                 CREATE TABLE server(
                     id VARCHAR(32) PRIMARY KEY,
                     server VARCHAR(30) UNIQUE,
+                    port INT,
                     private_key VARCHAR(45),
                     public_key VARCHAR(45)
                 );
@@ -40,7 +41,7 @@ class VerifyDatabase:
             ''')
 
             conn.commit()
-        except Exception as e:
+        except Exception:
             conn.rollback()
 
     def connection(self):

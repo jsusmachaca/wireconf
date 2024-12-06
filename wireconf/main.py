@@ -1,5 +1,5 @@
-from wireconf.cli.server import ServerCli
 from wireconf.config.database_config import VerifyDatabase
+from wireconf.cli import ServerCLI, ClientCLI
 import argparse
 
 
@@ -8,7 +8,8 @@ def main():
     vd.verify_or_create()
     conn = vd.connection()
 
-    server_cli = ServerCli(conn)
+    server_cli = ServerCLI(conn)
+    client_cli = ClientCLI(conn)
 
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest='command', required=True)
@@ -34,7 +35,7 @@ def main():
             print(peer_result.get('error'))
             return
 
-        client_result = server_cli.create_client(args.peer, args.port)
+        client_result = client_cli.create_client(args.peer)
         if client_result.get('error'):
             print(client_result.get('error'))
             return
@@ -47,7 +48,7 @@ def main():
                 print(peer_result.get('error'))
                 return
 
-            client_result = server_cli.create_client(args.add, 51820)
+            client_result = client_cli.create_client(args.add)
             if client_result.get('error'):
                 print(client_result.get('error'))
                 return

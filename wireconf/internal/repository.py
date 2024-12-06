@@ -7,13 +7,13 @@ class WireguardRepository:
     def __init__(self, connection: sqlite3.Connection) -> None:
         self.conn = connection
 
-    def insert_server_key(self, private_key: str, public_key: str):
+    def insert_server_key(self, private_key: str, public_key: str, port: int):
         random_uuid = uuid4()
         try:
             cur = self.conn.cursor()
             cur.execute(
-                'INSERT INTO server(id, server, private_key, public_key) VALUES (?, "vpn_server", ?, ?);',
-                [str(random_uuid), private_key, public_key]
+                'INSERT INTO server(id, server, private_key, public_key, port) VALUES (?, "vpn_server", ?, ?, ?);',
+                [str(random_uuid), private_key, public_key, port]
             )
             self.conn.commit()
 
@@ -48,17 +48,19 @@ class WireguardRepository:
         try:
             private_key: str
             public_key: str
+            port: str
 
             cur = self.conn.cursor()
-            cur.execute('SELECT private_key, public_key FROM server;')
-            rows = cur.fetchall()
-            for row in rows:
-                private_key = row[0]
-                public_key = row[1]
+            cur.execute('SELECT private_key, public_key, port FROM server;')
+            row = cur.fetchone()
 
-            return private_key, public_key
+            private_key = row[0]
+            public_key = row[1]
+            port = row[2]
+
+            return private_key, public_key, port
         except Exception as e:
-            return '', ''
+            return '', '', ''
 
     def get_peer_keys(self, name: str):
         try:
