@@ -55,28 +55,31 @@ class WireguardRepository:
             for row in rows:
                 private_key = row[0]
                 public_key = row[1]
-            
+
             return private_key, public_key
         except Exception as e:
             return '', ''
 
     def get_peer_keys(self, name: str):
-        private_key: str
-        public_key: str
-        ip_address: str
+        try:
+            private_key: str
+            public_key: str
+            ip_address: str
 
-        cur = self.conn.cursor()
-        cur.execute(
-            'SELECT ip_address, private_key, public_key FROM peers WHERE name=?;',
-            [name]
-        )
+            cur = self.conn.cursor()
+            cur.execute(
+                'SELECT ip_address, private_key, public_key FROM peers WHERE name=?;',
+                [name]
+            )
 
-        row = cur.fetchone()
-        ip_address = row[0]
-        private_key = row[1]
-        public_key = row[2]
+            row = cur.fetchone()
+            ip_address = row[0]
+            private_key = row[1]
+            public_key = row[2]
 
-        return (ip_address, private_key, public_key)
+            return (ip_address, private_key, public_key)
+        except Exception as e:
+            return '', '', ''
     
     def get_number_peers(self) -> int:
         cur = self.conn.cursor()
