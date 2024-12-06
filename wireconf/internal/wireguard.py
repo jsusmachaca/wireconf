@@ -1,13 +1,15 @@
-from os.path import exists as exists_file
+from os.path import expanduser, join
 
 
 class Wireguard:
+    home = expanduser('~')
+
     def __init__(self) -> None:
         pass
 
     def server_config_file(self, priv_key: str, port: int) -> bool:
-        with open('app/templates/server/server.conf') as file, \
-            open('replaced.conf', 'w') as replaced_file:
+        with open('wireconf/templates/server/server.conf') as file, \
+        open('replaced.conf', 'w') as replaced_file:
             lines = file.readlines()
             for line in lines:
                 replaced_port = line.replace('<port>', str(port))
@@ -17,15 +19,16 @@ class Wireguard:
         return True
   
     def peer_config_file(self, pub_key: str, ip_address: str):
-        with open('replaced.conf', 'a') as file, open('app/templates/server/peer.conf') as peer_file:
+        with open('wireconf/templates/server/peer.conf') as peer_file, open('replaced.conf', 'a') as file:
             lines = peer_file.readlines()
             for line in lines:
                 replaced_pub_key = line.replace('<client public key>', pub_key)
                 replaced_ipaddress = replaced_pub_key.replace('<private ip client>', ip_address)
                 file.write(replaced_ipaddress)
 
-    def client_config_file(self, priv_ip, priv_key, serv_pub_key, public_ip, port) -> str:
-        with open('app/templates/client/client.conf') as file, open('replaced_client.conf', 'w+') as client_file:
+    def client_config_file(self, name, priv_ip, priv_key, serv_pub_key, public_ip, port) -> str:
+        with open('wireconf/templates/client/client.conf') as file, \
+        open(join(self.home, '.wireconf', 'config-files', f'{name}.conf'), 'w+') as client_file:
             lines = file.readlines()
             for line in lines:
                 replaced_priv_ip = line.replace('<private ip client>', priv_ip)

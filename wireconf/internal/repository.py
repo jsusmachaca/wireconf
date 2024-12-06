@@ -45,18 +45,21 @@ class WireguardRepository:
             return False
 
     def get_server_keys(self):
-        private_key: str
-        public_key: str
+        try:
+            private_key: str
+            public_key: str
 
-        cur = self.conn.cursor()
-        cur.execute('SELECT private_key, public_key FROM server;')
-        rows = cur.fetchall()
-        for row in rows:
-            private_key = row[0]
-            public_key = row[1]
-        
-        return private_key, public_key
-    
+            cur = self.conn.cursor()
+            cur.execute('SELECT private_key, public_key FROM server;')
+            rows = cur.fetchall()
+            for row in rows:
+                private_key = row[0]
+                public_key = row[1]
+            
+            return private_key, public_key
+        except Exception as e:
+            return '', ''
+
     def get_peer_keys(self, name: str):
         private_key: str
         public_key: str

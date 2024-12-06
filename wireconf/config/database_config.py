@@ -1,4 +1,4 @@
-from os.path import expanduser, join, exists, expanduser
+from os.path import expanduser, join, exists
 from os import mkdir
 import sqlite3
 
@@ -15,6 +15,7 @@ class VerifyDatabase:
 
         print('Generating database...')
         mkdir(join(self.home, '.wireconf'))
+        mkdir(join(self.home, '.wireconf', 'config-files'))
 
         conn = sqlite3.connect(self.db_path)
         cur = conn.cursor()
