@@ -13,3 +13,7 @@ class ConfFileByWireConfExistsError(Exception):
 class AbortExeption(Exception):
     def __init__(self):
         super().__init__('Aborting...')
+
+class NoAvailableIPsError(Exception):
+    def __init__(self):
+        super().__init__('There are no more IPs available in the allowed range')

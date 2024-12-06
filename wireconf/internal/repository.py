@@ -1,11 +1,19 @@
 import sqlite3
 from uuid import uuid4
-from random import randint
+from wireconf.config import exeptions
 
 
 class WireguardRepository:
     def __init__(self, connection: sqlite3.Connection) -> None:
         self.conn = connection
+
+    def get_avialable_ip(self):
+        used_ips = {row[0] for row in self.conn.cursor().execute('SELECT ip_address FROM peers').fetchall()}
+        for i in range(2, 255):
+            candidate_ip = f'10.0.0.{i}'
+            if candidate_ip not in used_ips:
+                return candidate_ip
+        raise exeptions.NoAvailableIPsError()
 
     def insert_server_key(self, private_key: str, public_key: str, port: int):
         random_uuid = uuid4()
@@ -23,51 +31,32 @@ class WireguardRepository:
 
     def insert_peer_key(self, name: str, private_key: str, public_key: str):
         random_uuid = uuid4()
-        random_ip = f'10.0.0.{randint(2, 254)}'
+        ip_address = self.get_avialable_ip()
+
         cur = self.conn.cursor()
         try:
             cur.execute(
                 'INSERT INTO peers(id, name, ip_address, private_key, public_key) VALUES (?, ?, ?, ?, ?);',
-                [str(random_uuid), name, random_ip, private_key, public_key]
+                [str(random_uuid), name, ip_address, private_key, public_key]
             )
             self.conn.commit()
 
             return True
         except sqlite3.IntegrityError as e:
-            random_ip = f'10.0.0.{randint(2, 254)}'
-            if str(e).split(': ')[1] == 'peer.ip_address':
-                cur.execute(
-                    'INSERT INTO peers(id, name, ip_address, private_key, public_key) VALUES (?, ?, ?, ?, ?);',
-                    [str(random_uuid), name, random_ip, private_key, public_key]
-                )
-                self.conn.commit()
-                return True
             return False
 
     def get_server_keys(self):
         try:
-            private_key: str
-            public_key: str
-            port: str
-
             cur = self.conn.cursor()
             cur.execute('SELECT private_key, public_key, port FROM server;')
             row = cur.fetchone()
 
-            private_key = row[0]
-            public_key = row[1]
-            port = row[2]
-
-            return private_key, public_key, port
+            return row
         except Exception as e:
             return '', '', ''
 
     def get_peer_keys(self, name: str):
         try:
-            private_key: str
-            public_key: str
-            ip_address: str
-
             cur = self.conn.cursor()
             cur.execute(
                 'SELECT ip_address, private_key, public_key FROM peers WHERE name=?;',
@@ -75,11 +64,8 @@ class WireguardRepository:
             )
 
             row = cur.fetchone()
-            ip_address = row[0]
-            private_key = row[1]
-            public_key = row[2]
 
-            return (ip_address, private_key, public_key)
+            return row
         except Exception as e:
             return '', '', ''
     
