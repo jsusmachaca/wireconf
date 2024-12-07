@@ -1,17 +1,20 @@
 from wireconf.internal.keys import Keys
 from wireconf.internal.repository import WireguardRepository
-from wireconf.internal.wireguard import Wireguard
+from wireconf.internal.files import WireguardFile
 from wireconf.config import exeptions
 from os.path import exists as exists_file
+from os.path import expanduser, join
 import sqlite3
 import readchar
 
 
 class ServerCLI:
+    wireconf_path = 'replaced.conf' #join('/', 'etc', 'wireguard', 'wg0.conf')
+
     def __init__(self, connection: sqlite3.Connection) -> None:
         self.conn = connection
         self.repository = WireguardRepository(self.conn)
-        self.wg = Wireguard()
+        self.wg = WireguardFile()
 
     def create_server(self, port: int) -> dict[str, any]:
         try:
@@ -19,8 +22,7 @@ class ServerCLI:
             if server_priv_key:
                 raise exeptions.ConfFileByWireConfExistsError()
 
-            # /etc/wireguard/wg0.conf
-            if exists_file('replaced.conf'):
+            if exists_file(self.wireconf_path):
                 responses = ('y', 'n')
                 print('A non-wireconf configuration file already exists.\nDo you want to replace it? [y/n]: ')
                 confirm = readchar.readchar()
