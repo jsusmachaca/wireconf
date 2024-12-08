@@ -18,7 +18,7 @@ class WireguardFile:
                 replaced_file.write(replaced_priv_key)
 
         return True
-  
+
     def peer_config_file(self, pub_key: str, ip_address: str) -> bool:
         with open('wireconf/templates/server/peer.conf') as peer_file, \
         open(self.wireconf_path, 'a') as file:

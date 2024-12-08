@@ -7,14 +7,6 @@ class WireguardRepository:
     def __init__(self, connection: sqlite3.Connection) -> None:
         self.conn = connection
 
-    def get_avialable_ip(self):
-        used_ips = {row[0] for row in self.conn.cursor().execute('SELECT ip_address FROM peers').fetchall()}
-        for i in range(2, 255):
-            candidate_ip = f'10.0.0.{i}'
-            if candidate_ip not in used_ips:
-                return candidate_ip
-        raise exeptions.NoAvailableIPsError()
-
     def insert_server_key(self, private_key: str, public_key: str, port: int):
         random_uuid = uuid4()
         try:
@@ -68,10 +60,24 @@ class WireguardRepository:
             return row
         except Exception as e:
             return '', '', ''
-    
+
     def get_number_peers(self) -> int:
         cur = self.conn.cursor()
         cur.execute('SELECT COUNT(*) FROM peers;')
         count = cur.fetchone()[0]
 
         return int(count)
+
+    def get_avialable_ip(self):
+        used_ips = {row[0] for row in self.conn.cursor().execute('SELECT ip_address FROM peers').fetchall()}
+        for i in range(2, 255):
+            candidate_ip = f'10.0.0.{i}'
+            if candidate_ip not in used_ips:
+                return candidate_ip
+        raise exeptions.NoAvailableIPsError()
+    
+    def get_all_peers(self):
+        cur = self.conn.cursor()
+        cur.execute(
+            'SELECT name, ip_addess FROM peers;'
+        )
