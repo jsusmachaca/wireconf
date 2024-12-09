@@ -16,10 +16,10 @@ class ServerCLI:
         self.__repository = WireguardRepository(self.__conn)
         self.__wg = WireguardFile()
 
-    def create_server(self, address: str, port: int) -> dict[str, any]:
+    def create_server(self, server_name: str, address: str, port: int) -> dict[str, any]:
         public_ip: str
         try:
-            server_priv_key, _, _, _ = self.__repository.get_server_keys()
+            server_priv_key, _ = self.__repository.get_server_keys()
             if server_priv_key:
                 raise exeptions.ConfFileByWireConfExistsError()
             
@@ -41,12 +41,11 @@ class ServerCLI:
 
             priv_key, pub_key = Keys.generate_keys()
 
-            result = self.__repository.insert_server_key(priv_key, pub_key, public_ip, port)
-
+            result = self.__repository.insert_server_key(server_name, priv_key, pub_key, public_ip, port)
             if not result:
                 raise exeptions.ConfFileByWireConfExistsError()
 
-            if not self.__wg.server_config_file(priv_key, port):
+            if not self.__wg.server_config_file(server_name, priv_key, port):
                 raise exeptions.ConfFileByWireConfExistsError()
 
             return { 'success': True }
@@ -57,8 +56,8 @@ class ServerCLI:
 
     def create_peer(self, name: str) -> dict[str, any]:
         try:
-            server_priv_key, _, _, _ = self.__repository.get_server_keys()
-            if not server_priv_key:
+            server_name, _, _ = self.__repository.get_server_data()
+            if not server_name:
                 raise exeptions.NoKeysFountError()
 
             priv_key, pub_key = Keys.generate_keys()
@@ -68,7 +67,7 @@ class ServerCLI:
                 raise exeptions.PeerAlredyExistsError(name)
 
             ip_address, _, public_key = self.__repository.get_peer_keys(name)
-            self.__wg.peer_config_file(public_key, ip_address)
+            self.__wg.peer_config_file(server_name, public_key, ip_address)
             return { 'success': True }
         except exeptions.NoKeysFountError as e:
             return { 'error': e }

@@ -41,11 +41,11 @@ class CLI:
         return True
 
     @classmethod
-    def init(cls, peer: str = None, address: str = None, port: int = None) -> bool:
-        if peer is None:
+    def init(cls, server_name: str = None, peer: str = None, address: str = None, port: int = None) -> bool:
+        if server_name is None:
             return False
 
-        server_result = cls.__server_cli.create_server(address, port)
+        server_result = cls.__server_cli.create_server(server_name, address, port)
         if server_result.get('error'):
             print(server_result.get('error'))
             sys.exit(1)

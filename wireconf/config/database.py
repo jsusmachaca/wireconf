@@ -48,5 +48,5 @@ class VerifyDatabase:
             conn.rollback()
 
     def connection(self):
-        self.__conn = sqlite3.connect(self.db_path)
+        self.__conn = sqlite3.connect(self.__db_path)
         return self.__conn

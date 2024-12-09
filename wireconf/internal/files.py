@@ -1,17 +1,19 @@
 from os.path import expanduser, join
+import pwd
 
 
 class WireguardFile:
     __home = expanduser('~')
-    __wireconf_path = 'replaced.conf' #join('/', 'etc', 'wireguard', 'wg0.conf')
+    # __wireconf_path = 'replaced.conf' #join('/', 'etc', 'wireguard', 'wg0.conf')
+    __wireconf_path = lambda self, server_name: join('.', f'{server_name}.conf')
     __config_files = join(__home, '.wireconf', 'config-files')
 
     def __init__(self) -> None:
         pass
 
-    def server_config_file(self, priv_key: str, port: int) -> bool:
+    def server_config_file(self, server_name: str, priv_key: str, port: int) -> bool:
         with open('wireconf/templates/server/server.conf') as file, \
-        open(self.__wireconf_path, 'w') as replaced_file:
+        open(self.__wireconf_path(server_name), 'w') as replaced_file:
             lines = file.readlines()
             for line in lines:
                 replaced_port = line.replace('<port>', str(port))
@@ -20,9 +22,9 @@ class WireguardFile:
 
         return True
 
-    def peer_config_file(self, pub_key: str, ip_address: str) -> bool:
+    def peer_config_file(self, server_name: str, pub_key: str, ip_address: str) -> bool:
         with open('wireconf/templates/server/peer.conf') as peer_file, \
-        open(self.__wireconf_path, 'a') as file:
+        open(self.__wireconf_path(server_name), 'a') as file:
             lines = peer_file.readlines()
             for line in lines:
                 replaced_pub_key = line.replace('<client public key>', pub_key)
@@ -44,9 +46,9 @@ class WireguardFile:
             client_file.seek(0)
             return client_file.read()
 
-    def get_number_peers(self) -> int:
+    def get_number_peers(self, server_name: str) -> int:
         peer_count = 0
-        with open(self.__wireconf_path) as file:
+        with open(self.__wireconf_path(server_name)) as file:
             lines = file.readlines()
             for line in lines:
                 if line.startswith('[Peer]'):

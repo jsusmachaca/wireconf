@@ -7,6 +7,7 @@ def main():
     subparsers = parser.add_subparsers(dest='command', required=True)
 
     init_parser = subparsers.add_parser('init', help='Initialize config files')
+    init_parser.add_argument('-n', '--name', default='wg0')
     init_parser.add_argument('--peer', type=str, default='default-peer')
     init_parser.add_argument('-addr', '--address')
     init_parser.add_argument('-p', '--port', type=int, default=51820)
@@ -26,7 +27,7 @@ def main():
     CLI.verify_args(parser, args)
 
     if args.command == 'init':
-        CLI.init(args.peer, args.address, args.port)
+        CLI.init(args.name, args.peer, args.address, args.port)
 
     if args.command == 'peer':
         CLI.add_new_peer(args.add)
