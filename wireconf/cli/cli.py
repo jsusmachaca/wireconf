@@ -16,7 +16,7 @@ class CLI:
     def verify_args(cls, parser: ArgumentParser, args: any) -> bool:
         args_tuple = [
             v for k, v in args._get_kwargs()
-            if k not in ('list', 'qr', 'output') and k != 'command'
+            if k not in ('qr', 'output') and k != 'command'
         ]
 
         if args.command == 'peer':
@@ -35,7 +35,7 @@ class CLI:
                     if arg[1]:
                         parser.error(f'flag --{arg[0]} cannot be used together with -l')
 
-            if all(arg is None for arg in args_tuple):
+            if all(arg is None or arg is False for arg in args_tuple):
                 parser.error('flag -a, -d or -g is required')
 
         return True
