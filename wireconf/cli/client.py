@@ -1,4 +1,3 @@
-import pygments.formatters
 import pygments.lexer
 import pygments.lexers
 import pygments.lexers.web
@@ -52,29 +51,27 @@ class ClientCLI:
             if not conf_file:
                 raise FileNotFoundError
 
-            if is_qr and output:
-                qr = qrcode.make(conf_file)
-                qr.save(join(curdir, f'{name}.png'))
+            if output:
+                if is_qr:
+                    qr = qrcode.make(conf_file)
+                    qr.save(join(curdir, f'{name}.png'))
+                else:
+                    self.__wg.write_config_file(join(curdir, f'{name}.conf'), conf_file)
 
                 return { 'success': True }
-            elif output:
-                self.__wg.write_config_file(join(curdir, f'{name}.conf'), conf_file)
 
-                return { 'success': True }                
-            elif is_qr:
+            if is_qr:
                 qr = qrcode.QRCode()
                 qr.add_data(conf_file)
                 f = io.StringIO()
                 qr.print_ascii(out=f)
                 f.seek(0)
                 print(f.read())
-
-                return { 'success': True }
             else:
                 color_file = highlight(conf_file, IniLexer(), TerminalFormatter())
                 print(color_file.strip())
 
-                return { 'success': True }
+            return { 'success': True }
         except FileNotFoundError:
             return { 'error': 'The peer you are trying to obtain does not exist' }
 
