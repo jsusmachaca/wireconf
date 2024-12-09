@@ -22,13 +22,14 @@ def main():
 
     args = parser.parse_args()
 
+    CLI.verify_args(parser, args)
+
     if args.command == 'init':
         CLI.init(args.peer, args.port)
 
     if args.command == 'peer':
         CLI.add_new_peer(args.add)
         CLI.get_config_peer(args.get, args.qr, args.output)
-        CLI.verify_args(parser, args)
         CLI.list_all_peers(args.list)
 
 if __name__ == '__main__':
