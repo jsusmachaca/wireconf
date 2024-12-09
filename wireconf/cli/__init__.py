@@ -1,2 +1,1 @@
-from .client import ClientCLI
-from .server import ServerCLI
+from .cli import CLI
