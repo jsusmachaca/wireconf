@@ -2,15 +2,15 @@ from os.path import expanduser, join
 
 
 class WireguardFile:
-    home = expanduser('~')
-    wireconf_path = 'replaced.conf' #join('/', 'etc', 'wireguard', 'wg0.conf')
+    __home = expanduser('~')
+    __wireconf_path = 'replaced.conf' #join('/', 'etc', 'wireguard', 'wg0.conf')
 
     def __init__(self) -> None:
         pass
 
     def server_config_file(self, priv_key: str, port: int) -> bool:
         with open('wireconf/templates/server/server.conf') as file, \
-        open(self.wireconf_path, 'w') as replaced_file:
+        open(self.__wireconf_path, 'w') as replaced_file:
             lines = file.readlines()
             for line in lines:
                 replaced_port = line.replace('<port>', str(port))
@@ -21,7 +21,7 @@ class WireguardFile:
 
     def peer_config_file(self, pub_key: str, ip_address: str) -> bool:
         with open('wireconf/templates/server/peer.conf') as peer_file, \
-        open(self.wireconf_path, 'a') as file:
+        open(self.__wireconf_path, 'a') as file:
             lines = peer_file.readlines()
             for line in lines:
                 replaced_pub_key = line.replace('<client public key>', pub_key)
@@ -31,7 +31,7 @@ class WireguardFile:
 
     def client_config_file(self, name, priv_ip, priv_key, serv_pub_key, public_ip, port) -> str:
         with open('wireconf/templates/client/client.conf') as file, \
-        open(join(self.home, '.wireconf', 'config-files', f'{name}.conf'), 'w+') as client_file:
+        open(join(self.__home, '.wireconf', 'config-files', f'{name}.conf'), 'w+') as client_file:
             lines = file.readlines()
             for line in lines:
                 replaced_priv_ip = line.replace('<private ip client>', priv_ip)
@@ -45,7 +45,7 @@ class WireguardFile:
 
     def get_number_peers(self) -> int:
         peer_count = 0
-        with open(self.wireconf_path) as file:
+        with open(self.__wireconf_path) as file:
             lines = file.readlines()
             for line in lines:
                 if line.startswith('[Peer]'):
@@ -55,5 +55,8 @@ class WireguardFile:
         return peer_count
 
     def get_client_config_file(self, name) -> str:
-        with open(join(self.home, '.wireconf', 'config-files', f'{name}.conf')) as file:
-            return file.read()
+        try:
+            with open(join(self.__home, '.wireconf', 'config-files', f'{name}.conf')) as file:
+                return file.read()
+        except FileNotFoundError:
+            return ''
