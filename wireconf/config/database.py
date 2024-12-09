@@ -3,21 +3,23 @@ from os import mkdir
 import sqlite3
 
 class VerifyDatabase:
-    home = expanduser('~')
-    db_path = join(home, '.wireconf', 'keys.db')
+    __home = expanduser('~')
+    __db_path = join(__home, '.wireconf', 'keys.db')
+    __wireconf_path = join(__home, '.wireconf')
+    __config_files = join(__home, '.wireconf', 'config-files')
 
     def __init__(self) -> None:
         self.__conn: sqlite3.Connection
 
     def verify_or_create(self):
-        if exists(join(self.home, '.wireconf')):
+        if exists(join(self.__wireconf_path)):
             return
 
         print('Generating database...')
-        mkdir(join(self.home, '.wireconf'))
-        mkdir(join(self.home, '.wireconf', 'config-files'))
+        mkdir(join(self.__wireconf_path))
+        mkdir(join(self.__config_files))
 
-        conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.__db_path)
         cur = conn.cursor()
 
         try:

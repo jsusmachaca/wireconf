@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "wireconf"
 version = "0.1.0"
-description = ""
+description = "Terminal tool (CLI) to manage wireguard configurations for VPN"
 authors = ["jsusmachaca <falcorgd@gmail.com>"]
 license = "GPL 3.0"
 readme = "README.md"

@@ -4,6 +4,7 @@ from os.path import expanduser, join
 class WireguardFile:
     __home = expanduser('~')
     __wireconf_path = 'replaced.conf' #join('/', 'etc', 'wireguard', 'wg0.conf')
+    __config_files = join(__home, '.wireconf', 'config-files')
 
     def __init__(self) -> None:
         pass
@@ -31,7 +32,7 @@ class WireguardFile:
 
     def client_config_file(self, name, priv_ip, priv_key, serv_pub_key, address, port) -> str:
         with open('wireconf/templates/client/client.conf') as file, \
-        open(join(self.__home, '.wireconf', 'config-files', f'{name}.conf'), 'w+') as client_file:
+        open(join(self.__config_files, f'{name}.conf'), 'w+') as client_file:
             lines = file.readlines()
             for line in lines:
                 replaced_priv_ip = line.replace('<private ip client>', priv_ip)
@@ -56,7 +57,7 @@ class WireguardFile:
 
     def get_client_config_file(self, name: str) -> str:
         try:
-            with open(join(self.__home, '.wireconf', 'config-files', f'{name}.conf')) as file:
+            with open(join(self.__config_files, f'{name}.conf')) as file:
                 return file.read()
         except FileNotFoundError:
             return ''
