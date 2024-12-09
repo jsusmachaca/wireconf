@@ -12,6 +12,15 @@ class CLI:
     __server_cli = ServerCLI(__conn)
 
     @classmethod
+    def verify_args(cls, parser: ArgumentParser, args: any) -> bool:
+        args_tuple = [arg[1] for arg in args._get_kwargs() if arg[1] != 'peer']
+
+        if all(arg is None for arg in args_tuple):
+            parser.error('[-a ADD], [-d DELETE] or [-g GET] is required')
+            return False
+        return True
+
+    @classmethod
     def init(cls, peer: str = None, port: int = None) -> bool:
         if peer is None:
              return False
@@ -49,22 +58,17 @@ class CLI:
         return True
 
     @classmethod
-    def get_config_peer(cls, peer: str = None) -> bool:
+    def get_config_peer(cls, peer: str = None, qr: bool = False) -> bool:
         if peer is None:
             return False
 
-        result =  cls.__client_cli.get_config_file(peer)
+        if not peer and qr:
+            print('')
+            return False
+
+        result =  cls.__client_cli.get_config_file(peer, qr)
         if result.get('error'):
             print(result.get('error'))
-            return False
-        return True
-
-    @classmethod
-    def verify_args(cls, parser: ArgumentParser, args: any) -> bool:
-        args_tuple = [arg[1] for arg in args._get_kwargs() if arg[1] != 'peer']
-
-        if all(arg is None for arg in args_tuple):
-            parser.error('[-a ADD], [-d DELETE] or [-g GET] is required')
             return False
         return True
 

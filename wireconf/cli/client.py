@@ -6,6 +6,7 @@ from wireconf.internal.repository import WireguardRepository
 from wireconf.internal.files import WireguardFile
 from wireconf.config import exeptions
 from pygments.lexers.web import JsonLexer
+from pygments.lexers.text import IniLexer
 from pygments import highlight
 from pygments.formatters import TerminalFormatter
 import sqlite3
@@ -44,14 +45,26 @@ class ClientCLI:
         except exeptions.NoKeysFountError as e:
             return { 'error': e }
 
-    def get_config_file(self, name) -> dict[str, any]:
+    def get_config_file(self, name, is_qr) -> dict[str, any]:
         try:
             conf_file = self.__wg.get_client_config_file(name)
             if not conf_file:
                 raise FileNotFoundError
-            print(conf_file.strip())
 
-            return { 'success': True }
+            if is_qr:
+                qr = qrcode.QRCode()
+                qr.add_data(conf_file)
+                f = io.StringIO()
+                qr.print_ascii(out=f)
+                f.seek(0)
+                print(f.read())
+
+                return { 'success': True }
+            else:
+                color_file = highlight(conf_file, IniLexer(), TerminalFormatter())
+                print(color_file.strip())
+
+                return { 'success': True }
         except FileNotFoundError:
             return { 'error': 'The peer you are trying to obtain does not exist' }
 

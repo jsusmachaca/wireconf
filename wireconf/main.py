@@ -27,12 +27,9 @@ def main():
 
     if args.command == 'peer':
         CLI.add_new_peer(args.add)
-        CLI.get_config_peer(args.get)
+        CLI.get_config_peer(args.get, args.qr)
         CLI.verify_args(parser, args)
         CLI.list_all_peers(args.list)
-
-        if args.qr:
-            print(args.qr)
 
 if __name__ == '__main__':
     main()
