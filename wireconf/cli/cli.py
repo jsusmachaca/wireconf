@@ -2,6 +2,7 @@ from .client import ClientCLI
 from .server import ServerCLI
 from wireconf.config.database import VerifyDatabase
 from argparse import ArgumentParser
+from wireconf.internal.cmd import CMD
 import sys
 
 
@@ -11,6 +12,7 @@ class CLI:
     __conn = __vd.connection()
     __client_cli = ClientCLI(__conn)
     __server_cli = ServerCLI(__conn)
+    __cmd = CMD(__conn)
 
     @classmethod
     def verify_args(cls, parser: ArgumentParser, args: any) -> bool:
@@ -41,6 +43,7 @@ class CLI:
         return True
 
     @classmethod
+    @__cmd.wg_start
     def init(cls, server_name: str = None, peer_name: str = None, address: str = None, port: int = None) -> bool:
         if server_name is None:
             return False
@@ -66,6 +69,7 @@ class CLI:
         return True
 
     @classmethod
+    @__cmd.wg_restart
     def add_new_peer(cls, peer_name: str = None) -> bool:
         if peer_name is None:
             return False
@@ -107,3 +111,5 @@ class CLI:
             print(result.get('error'))
             sys.exit(1)
             return False
+
+        return True

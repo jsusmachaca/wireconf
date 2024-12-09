@@ -1,4 +1,4 @@
-from wireconf.internal.keys import Keys
+from wireconf.internal.cmd import CMD
 from wireconf.internal.repository import WireguardRepository
 from wireconf.internal.files import WireguardFile
 from wireconf.config import exeptions
@@ -39,7 +39,7 @@ class ServerCLI:
                 else:
                     raise exeptions.AbortExeption()
 
-            priv_key, pub_key = Keys.generate_keys()
+            priv_key, pub_key = CMD.generate_keys()
 
             result = self.__repository.insert_server_key(server_name, priv_key, pub_key, public_ip, port)
             if not result:
@@ -60,7 +60,7 @@ class ServerCLI:
             if not server_name:
                 raise exeptions.NoKeysFountError()
 
-            priv_key, pub_key = Keys.generate_keys()
+            priv_key, pub_key = CMD.generate_keys()
             result = self.__repository.insert_peer_key(peer_name, priv_key, pub_key)
 
             if not result:

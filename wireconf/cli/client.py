@@ -6,7 +6,6 @@ from pygments.lexers.text import IniLexer
 from pygments import highlight
 from pygments.formatters import TerminalFormatter
 import sqlite3
-import requests
 import qrcode
 import io
 import json
@@ -28,7 +27,7 @@ class ClientCLI:
             _, server_pub_key = self.__repository.get_server_keys()
             ip_address, private_key, _ = self.__repository.get_peer_keys(peer_name)
             config = self.__wg.peer_file(peer_name, ip_address, private_key, server_pub_key, address, port)
-            qr = qrcode.QRCode()
+            qr = qrcode.QRCode(box_size=1, border=1)
             qr.add_data(config)
             f = io.StringIO()
             qr.print_ascii(out=f)

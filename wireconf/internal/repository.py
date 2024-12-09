@@ -108,3 +108,19 @@ class WireguardRepository:
             return peers
         except Exception as e:
             return []
+
+
+    '''Static methods'''
+
+    @staticmethod
+    def get_interface_name(conn: sqlite3.Connection):
+        try:
+            cur = conn.cursor()
+            cur.execute('SELECT name FROM server;')
+            row = cur.fetchone()
+            if row is None:
+                raise
+
+            return row[0]
+        except Exception:
+            return ''

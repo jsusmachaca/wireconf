@@ -30,9 +30,12 @@ def main():
         CLI.init(args.name, args.peer, args.address, args.port)
 
     if args.command == 'peer':
-        CLI.add_new_peer(args.add)
-        CLI.get_peer_conf(args.get, args.qr, args.output)
-        CLI.list_all_peers(args.list)
+        if args.add:
+            CLI.add_new_peer(args.add)
+        elif args.get:
+            CLI.get_peer_conf(args.get, args.qr, args.output)
+        elif args.list:
+            CLI.list_all_peers(args.list)
 
 if __name__ == '__main__':
     main()
