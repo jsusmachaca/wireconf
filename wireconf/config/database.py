@@ -3,10 +3,10 @@ from os import mkdir
 import sqlite3
 
 class VerifyDatabase:
-    __home = expanduser('~')
-    __db_path = join(__home, '.wireconf', 'keys.db')
-    __wireconf_dir = join(__home, '.wireconf')
-    __peer_files = join(__home, '.wireconf', 'peers')
+    __home = expanduser('~') # for development
+    __wireconf_dir = join(__home, '.wireconf') # /var/lib/wireconf
+    __db_path = join(__wireconf_dir, 'keys.db')
+    __peer_files = join(__home, '.wireconf', 'peers') # /etc/wireguard/peers
 
     def __init__(self) -> None:
         self.__conn: sqlite3.Connection

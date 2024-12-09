@@ -4,9 +4,8 @@ import pwd
 
 class WireguardFile:
     __home = expanduser('~')
-    # __wireconf_path = 'replaced.conf' #join('/', 'etc', 'wireguard', 'wg0.conf')
-    __wireconf_path = lambda self, server_name: join('.', f'{server_name}.conf')
-    __peer_files = join(__home, '.wireconf', 'peers')
+    __wireconf_path = lambda self, server_name: join('.', f'{server_name}.conf') # /etc/wireguard/name.conf
+    __peer_files = join(__home, '.wireconf', 'peers') # /etc/wireguard/peers
 
     def __init__(self) -> None:
         pass
