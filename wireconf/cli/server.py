@@ -54,19 +54,19 @@ class ServerCLI:
         except exeptions.AbortExeption as e:
             return { 'error': e }
 
-    def create_peer(self, name: str) -> dict[str, any]:
+    def create_peer(self, peer_name: str) -> dict[str, any]:
         try:
             server_name, _, _ = self.__repository.get_server_data()
             if not server_name:
                 raise exeptions.NoKeysFountError()
 
             priv_key, pub_key = Keys.generate_keys()
-            result = self.__repository.insert_peer_key(name, priv_key, pub_key)
+            result = self.__repository.insert_peer_key(peer_name, priv_key, pub_key)
 
             if not result:
-                raise exeptions.PeerAlredyExistsError(name)
+                raise exeptions.PeerAlredyExistsError(peer_name)
 
-            ip_address, _, public_key = self.__repository.get_peer_keys(name)
+            ip_address, _, public_key = self.__repository.get_peer_keys(peer_name)
             self.__wg.peer_config_file(server_name, public_key, ip_address)
             return { 'success': True }
         except exeptions.NoKeysFountError as e:

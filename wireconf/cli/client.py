@@ -19,15 +19,15 @@ class ClientCLI:
         self.__repository = WireguardRepository(self.__conn)
         self.__wg = WireguardFile()
 
-    def create_client(self, name: str) -> dict[str, any]:
+    def create_client(self, peer_name: str) -> dict[str, any]:
         try:
             server_name, address, port = self.__repository.get_server_data()
             if not server_name:
                 raise exeptions.NoKeysFountError()
 
             _, server_pub_key = self.__repository.get_server_keys()
-            ip_address, private_key, _ = self.__repository.get_peer_keys(name)
-            config = self.__wg.client_config_file(name, ip_address, private_key, server_pub_key, address, port)
+            ip_address, private_key, _ = self.__repository.get_peer_keys(peer_name)
+            config = self.__wg.client_config_file(peer_name, ip_address, private_key, server_pub_key, address, port)
             qr = qrcode.QRCode()
             qr.add_data(config)
             f = io.StringIO()
@@ -39,18 +39,18 @@ class ClientCLI:
         except exeptions.NoKeysFountError as e:
             return { 'error': e }
 
-    def get_config_file(self, name: str, is_qr: bool, output: bool) -> dict[str, any]:
+    def get_config_file(self, peer_name: str, is_qr: bool, output: bool) -> dict[str, any]:
         try:
-            conf_file = self.__wg.get_client_config_file(name)
+            conf_file = self.__wg.get_client_config_file(peer_name)
             if not conf_file:
                 raise FileNotFoundError
 
             if output:
                 if is_qr:
                     qr = qrcode.make(conf_file)
-                    qr.save(join(curdir, f'{name}.png'))
+                    qr.save(join(curdir, f'{peer_name}.png'))
                 else:
-                    self.__wg.write_config_file(join(curdir, f'{name}.conf'), conf_file)
+                    self.__wg.write_config_file(join(curdir, f'{peer_name}.conf'), conf_file)
 
                 return { 'success': True }
 

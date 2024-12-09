@@ -32,9 +32,9 @@ class WireguardFile:
                 file.write(replaced_ipaddress)
         return True
 
-    def client_config_file(self, name, priv_ip, priv_key, serv_pub_key, address, port) -> str:
+    def client_config_file(self, peer_name, priv_ip, priv_key, serv_pub_key, address, port) -> str:
         with open('wireconf/templates/client/client.conf') as file, \
-        open(join(self.__config_files, f'{name}.conf'), 'w+') as client_file:
+        open(join(self.__config_files, f'{peer_name}.conf'), 'w+') as client_file:
             lines = file.readlines()
             for line in lines:
                 replaced_priv_ip = line.replace('<private ip client>', priv_ip)
@@ -57,9 +57,9 @@ class WireguardFile:
             
         return peer_count
 
-    def get_client_config_file(self, name: str) -> str:
+    def get_client_config_file(self, peer_name: str) -> str:
         try:
-            with open(join(self.__config_files, f'{name}.conf')) as file:
+            with open(join(self.__config_files, f'{peer_name}.conf')) as file:
                 return file.read()
         except FileNotFoundError:
             return ''

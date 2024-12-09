@@ -41,7 +41,7 @@ class CLI:
         return True
 
     @classmethod
-    def init(cls, server_name: str = None, peer: str = None, address: str = None, port: int = None) -> bool:
+    def init(cls, server_name: str = None, peer_name: str = None, address: str = None, port: int = None) -> bool:
         if server_name is None:
             return False
 
@@ -51,13 +51,13 @@ class CLI:
             sys.exit(1)
             return False
 
-        peer_result = cls.__server_cli.create_peer(peer)
+        peer_result = cls.__server_cli.create_peer(peer_name)
         if peer_result.get('error'):
             print(peer_result.get('error'))
             sys.exit(1)
             return False
 
-        client_result = cls.__client_cli.create_client(peer)
+        client_result = cls.__client_cli.create_client(peer_name)
         if client_result.get('error'):
             print(client_result.get('error'))
             sys.exit(1)
@@ -66,17 +66,17 @@ class CLI:
         return True
 
     @classmethod
-    def add_new_peer(cls, peer: str = None) -> bool:
-        if peer is None:
+    def add_new_peer(cls, peer_name: str = None) -> bool:
+        if peer_name is None:
             return False
 
-        peer_result = cls.__server_cli.create_peer(peer)
+        peer_result = cls.__server_cli.create_peer(peer_name)
         if peer_result.get('error'):
             print(peer_result.get('error'))
             sys.exit(1)
             return False
 
-        client_result = cls.__client_cli.create_client(peer)
+        client_result = cls.__client_cli.create_client(peer_name)
         if client_result.get('error'):
                 print(client_result.get('error'))
                 sys.exit(1)
@@ -85,11 +85,11 @@ class CLI:
         return True
 
     @classmethod
-    def get_config_peer(cls, peer: str = None, qr: bool = False, output: bool = False) -> bool:
-        if peer is None:
+    def get_config_peer(cls, peer_name: str = None, qr: bool = False, output: bool = False) -> bool:
+        if peer_name is None:
             return False
 
-        result =  cls.__client_cli.get_config_file(peer, qr, output)
+        result =  cls.__client_cli.get_config_file(peer_name, qr, output)
         if result.get('error'):
             print(result.get('error'))
             sys.exit(1)

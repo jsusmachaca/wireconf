@@ -21,7 +21,7 @@ class WireguardRepository:
         except sqlite3.IntegrityError:
             return False
 
-    def insert_peer_key(self, name: str, private_key: str, public_key: str):
+    def insert_peer_key(self, peer_name: str, private_key: str, public_key: str):
         random_uuid = uuid4()
         ip_address = self.get_avialable_ip()
 
@@ -29,7 +29,7 @@ class WireguardRepository:
         try:
             cur.execute(
                 'INSERT INTO peers(id, name, address, private_key, public_key) VALUES (?, ?, ?, ?, ?);',
-                [str(random_uuid), name, ip_address, private_key, public_key]
+                [str(random_uuid), peer_name, ip_address, private_key, public_key]
             )
             self.__conn.commit()
 
@@ -61,12 +61,12 @@ class WireguardRepository:
         except Exception as e:
             return '', '', ''
 
-    def get_peer_keys(self, name: str):
+    def get_peer_keys(self, peer_name: str):
         try:
             cur = self.__conn.cursor()
             cur.execute(
                 'SELECT address, private_key, public_key FROM peers WHERE name=?;',
-                [name]
+                [peer_name]
             )
 
             row = cur.fetchone()
