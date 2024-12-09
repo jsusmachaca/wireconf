@@ -6,7 +6,7 @@ class WireguardFile:
     __home = expanduser('~')
     # __wireconf_path = 'replaced.conf' #join('/', 'etc', 'wireguard', 'wg0.conf')
     __wireconf_path = lambda self, server_name: join('.', f'{server_name}.conf')
-    __config_files = join(__home, '.wireconf', 'config-files')
+    __peer_files = join(__home, '.wireconf', 'peers')
 
     def __init__(self) -> None:
         pass
@@ -35,7 +35,7 @@ class WireguardFile:
 
     def peer_file(self, peer_name, priv_ip, priv_key, serv_pub_key, address, port) -> str:
         with open('wireconf/templates/client/client.conf') as template, \
-        open(join(self.__config_files, f'{peer_name}.conf'), 'w+') as client_file:
+        open(join(self.__peer_files, f'{peer_name}.conf'), 'w+') as client_file:
             lines = template.readlines()
             for line in lines:
                 replaced_priv_ip = line.replace('<private ip client>', priv_ip)
@@ -60,11 +60,11 @@ class WireguardFile:
 
     def get_peer_file(self, peer_name: str) -> str:
         try:
-            with open(join(self.__config_files, f'{peer_name}.conf')) as client_file:
+            with open(join(self.__peer_files, f'{peer_name}.conf')) as client_file:
                 return client_file.read()
         except FileNotFoundError:
             return ''
-    
+
     def save_peer_file(self, current_path: str, data: str) -> bool:
             with open(current_path, 'w') as client_file:
                 client_file.write(data)

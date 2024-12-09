@@ -5,19 +5,19 @@ import sqlite3
 class VerifyDatabase:
     __home = expanduser('~')
     __db_path = join(__home, '.wireconf', 'keys.db')
-    __wireconf_path = join(__home, '.wireconf')
-    __config_files = join(__home, '.wireconf', 'config-files')
+    __wireconf_dir = join(__home, '.wireconf')
+    __peer_files = join(__home, '.wireconf', 'peers')
 
     def __init__(self) -> None:
         self.__conn: sqlite3.Connection
 
     def verify_or_create(self):
-        if exists(join(self.__wireconf_path)):
+        if exists(join(self.__wireconf_dir)):
             return
 
         print('Generating database...')
-        mkdir(join(self.__wireconf_path))
-        mkdir(join(self.__config_files))
+        mkdir(join(self.__wireconf_dir))
+        mkdir(join(self.__peer_files))
 
         conn = sqlite3.connect(self.__db_path)
         cur = conn.cursor()
