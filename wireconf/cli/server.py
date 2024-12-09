@@ -45,7 +45,7 @@ class ServerCLI:
             if not result:
                 raise exeptions.ConfFileByWireConfExistsError()
 
-            if not self.__wg.server_config_file(server_name, priv_key, port):
+            if not self.__wg.server_file(server_name, priv_key, port):
                 raise exeptions.ConfFileByWireConfExistsError()
 
             return { 'success': True }
@@ -54,7 +54,7 @@ class ServerCLI:
         except exeptions.AbortExeption as e:
             return { 'error': e }
 
-    def create_peer(self, peer_name: str) -> dict[str, any]:
+    def add_peer_in_server(self, peer_name: str) -> dict[str, any]:
         try:
             server_name, _, _ = self.__repository.get_server_data()
             if not server_name:
@@ -67,7 +67,7 @@ class ServerCLI:
                 raise exeptions.PeerAlredyExistsError(peer_name)
 
             ip_address, _, public_key = self.__repository.get_peer_keys(peer_name)
-            self.__wg.peer_config_file(server_name, public_key, ip_address)
+            self.__wg.server_file_peer(server_name, public_key, ip_address)
             return { 'success': True }
         except exeptions.NoKeysFountError as e:
             return { 'error': e }
