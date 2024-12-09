@@ -54,9 +54,14 @@ class WireguardFile:
             
         return peer_count
 
-    def get_client_config_file(self, name) -> str:
+    def get_client_config_file(self, name: str) -> str:
         try:
             with open(join(self.__home, '.wireconf', 'config-files', f'{name}.conf')) as file:
                 return file.read()
         except FileNotFoundError:
             return ''
+    
+    def write_config_file(self, current_path: str, data: str) -> bool:
+            with open(current_path, 'w') as file:
+                file.write(data)
+            return True

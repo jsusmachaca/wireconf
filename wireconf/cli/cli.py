@@ -58,7 +58,7 @@ class CLI:
         return True
 
     @classmethod
-    def get_config_peer(cls, peer: str = None, qr: bool = False) -> bool:
+    def get_config_peer(cls, peer: str = None, qr: bool = False, output: bool = False) -> bool:
         if peer is None:
             return False
 
@@ -66,7 +66,11 @@ class CLI:
             print('')
             return False
 
-        result =  cls.__client_cli.get_config_file(peer, qr)
+        if not peer and output:
+            print('papi')
+            return False
+
+        result =  cls.__client_cli.get_config_file(peer, qr, output)
         if result.get('error'):
             print(result.get('error'))
             return False

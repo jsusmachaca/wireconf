@@ -1,6 +1,5 @@
 from wireconf.cli import  CLI
 import argparse
-import sys
 
 
 def main():
@@ -17,8 +16,9 @@ def main():
     peer_parser.add_argument('-l', '--list', action='store_true')
 
     group = peer_parser.add_argument_group()
-    group.add_argument('-g', '--get')
+    group.add_argument('-g', '--get', type=str)
     group.add_argument('-qr', action='store_true')
+    group.add_argument('-o', '--output', action='store_true')
 
     args = parser.parse_args()
 
@@ -27,7 +27,7 @@ def main():
 
     if args.command == 'peer':
         CLI.add_new_peer(args.add)
-        CLI.get_config_peer(args.get, args.qr)
+        CLI.get_config_peer(args.get, args.qr, args.output)
         CLI.verify_args(parser, args)
         CLI.list_all_peers(args.list)
 

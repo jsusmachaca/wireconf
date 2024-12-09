@@ -14,6 +14,7 @@ import requests
 import qrcode
 import io
 import json
+from os.path import curdir, join
 
 
 class ClientCLI:
@@ -45,13 +46,22 @@ class ClientCLI:
         except exeptions.NoKeysFountError as e:
             return { 'error': e }
 
-    def get_config_file(self, name, is_qr) -> dict[str, any]:
+    def get_config_file(self, name: str, is_qr: bool, output: bool) -> dict[str, any]:
         try:
             conf_file = self.__wg.get_client_config_file(name)
             if not conf_file:
                 raise FileNotFoundError
 
-            if is_qr:
+            if is_qr and output:
+                qr = qrcode.make(conf_file)
+                qr.save(join(curdir, f'{name}.png'))
+
+                return { 'success': True }
+            elif output:
+                self.__wg.write_config_file(join(curdir, f'{name}.conf'), conf_file)
+
+                return { 'success': True }                
+            elif is_qr:
                 qr = qrcode.QRCode()
                 qr.add_data(conf_file)
                 f = io.StringIO()
