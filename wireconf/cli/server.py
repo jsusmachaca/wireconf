@@ -5,6 +5,7 @@ from wireconf.config import exeptions
 from os.path import exists as exists_file
 import sqlite3
 import readchar
+import requests
 
 
 class ServerCLI:
@@ -15,11 +16,18 @@ class ServerCLI:
         self.__repository = WireguardRepository(self.__conn)
         self.__wg = WireguardFile()
 
-    def create_server(self, port: int) -> dict[str, any]:
+    def create_server(self, address: str, port: int) -> dict[str, any]:
+        public_ip: str
         try:
-            server_priv_key, _, _ = self.__repository.get_server_keys()
+            server_priv_key, _, _, _ = self.__repository.get_server_keys()
             if server_priv_key:
                 raise exeptions.ConfFileByWireConfExistsError()
+            
+            if address:
+                public_ip = address
+            else:
+                response = requests.get('https://ifconfig.me')
+                public_ip = response.text
 
             if exists_file(self.wireconf_path):
                 responses = ('y', 'n')
@@ -32,7 +40,8 @@ class ServerCLI:
                     raise exeptions.AbortExeption()
 
             priv_key, pub_key = Keys.generate_keys()
-            result = self.__repository.insert_server_key(priv_key, pub_key, port)
+
+            result = self.__repository.insert_server_key(priv_key, pub_key, public_ip, port)
 
             if not result:
                 raise exeptions.ConfFileByWireConfExistsError()
@@ -48,7 +57,7 @@ class ServerCLI:
 
     def create_peer(self, name: str) -> dict[str, any]:
         try:
-            server_priv_key, _, _ = self.__repository.get_server_keys()
+            server_priv_key, _, _, _ = self.__repository.get_server_keys()
             if not server_priv_key:
                 raise exeptions.NoKeysFountError()
 

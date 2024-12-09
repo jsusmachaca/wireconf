@@ -29,7 +29,7 @@ class WireguardFile:
                 file.write(replaced_ipaddress)
         return True
 
-    def client_config_file(self, name, priv_ip, priv_key, serv_pub_key, public_ip, port) -> str:
+    def client_config_file(self, name, priv_ip, priv_key, serv_pub_key, address, port) -> str:
         with open('wireconf/templates/client/client.conf') as file, \
         open(join(self.__home, '.wireconf', 'config-files', f'{name}.conf'), 'w+') as client_file:
             lines = file.readlines()
@@ -37,7 +37,7 @@ class WireguardFile:
                 replaced_priv_ip = line.replace('<private ip client>', priv_ip)
                 replaced_priv_key = replaced_priv_ip.replace('<client private key>', priv_key)
                 replaced_serv_pub_key = replaced_priv_key.replace('<server public key>', serv_pub_key)
-                replaced_address = replaced_serv_pub_key.replace('<server ip|host>:<port>', f'{public_ip}:{port}')
+                replaced_address = replaced_serv_pub_key.replace('<server ip|host>:<port>', f'{address}:{port}')
                 client_file.write(replaced_address)
 
             client_file.seek(0)

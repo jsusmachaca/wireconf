@@ -24,7 +24,8 @@ class VerifyDatabase:
             cur.execute('''
                 CREATE TABLE server(
                     id VARCHAR(32) PRIMARY KEY,
-                    server VARCHAR(30) UNIQUE,
+                    name VARCHAR(30) UNIQUE,
+                    address VARCHAR(15) UNIQUE,
                     port INT,
                     private_key VARCHAR(45),
                     public_key VARCHAR(45)
@@ -34,7 +35,7 @@ class VerifyDatabase:
                 CREATE TABLE peers(
                     id VARCHAR(32) PRIMARY KEY,
                     name VACHAR(30) UNIQUE,
-                    ip_address VARCHAR(15) UNIQUE,
+                    address VARCHAR(15) UNIQUE,
                     private_key VARCHAR(45),
                     public_key VARCHAR(45)
                 );

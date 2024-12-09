@@ -21,16 +21,13 @@ class ClientCLI:
 
     def create_client(self, name: str) -> dict[str, any]:
         try:
-            server_priv_key, _, _ = self.__repository.get_server_keys()
+            server_priv_key, _, _, _ = self.__repository.get_server_keys()
             if not server_priv_key:
                 raise exeptions.NoKeysFountError()
 
-            response = requests.get('https://ifconfig.me')
-            public_ip = response.text
-
-            _, server_pub_key, port = self.__repository.get_server_keys()
+            _, server_pub_key, address, port = self.__repository.get_server_keys()
             ip_address, private_key, _ = self.__repository.get_peer_keys(name)
-            config = self.__wg.client_config_file(name, ip_address, private_key, server_pub_key, public_ip, port)
+            config = self.__wg.client_config_file(name, ip_address, private_key, server_pub_key, address, port)
             qr = qrcode.QRCode()
             qr.add_data(config)
             f = io.StringIO()
