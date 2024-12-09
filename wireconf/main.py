@@ -20,6 +20,7 @@ def main():
 
     peer_parser = subparsers.add_parser('peer', help='Initialize config files')
     peer_parser.add_argument('-a', '--add', type=str)
+    peer_parser.add_argument('-g', '--get')
     peer_parser.add_argument('-d', '--delete', type=int)
 
     args = parser.parse_args()
@@ -52,12 +53,14 @@ def main():
             if client_result.get('error'):
                 print(client_result.get('error'))
                 return
-
-            print('Peer created')
             return
 
-        if not args.add and not args.delete:
-            parser.error('[-a ADD] or [-d DELETE] is required')
+        if args.get:
+            client_cli.get_config_file(args.get)
+            return
+
+        if not args.add and not args.delete and not args.get:
+            parser.error('[-a ADD], [-d DELETE] or [-g GET] is required')
 
 if __name__ == '__main__':
     main()

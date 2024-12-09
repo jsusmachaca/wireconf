@@ -13,7 +13,7 @@ class ClientCLI:
         self.repository = WireguardRepository(self.conn)
         self.wg = WireguardFile()
 
-    def create_client(self, name) -> dict[str, any]:
+    def create_client(self, name: str) -> dict[str, any]:
         try:
             server_priv_key, _, _ = self.repository.get_server_keys()
             if not server_priv_key:
@@ -35,3 +35,10 @@ class ClientCLI:
             return { 'success': True }
         except exeptions.NoKeysFountError as e:
             return { 'error': e }
+
+    def get_config_file(self, name) -> str:
+        if name:
+            conf_file = self.wg.get_client_config_file(name)
+            print(conf_file)
+            return
+        return
