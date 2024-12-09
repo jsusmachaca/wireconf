@@ -1,6 +1,3 @@
-import pygments.lexer
-import pygments.lexers
-import pygments.lexers.web
 from wireconf.internal.repository import WireguardRepository
 from wireconf.internal.files import WireguardFile
 from wireconf.config import exeptions
