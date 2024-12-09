@@ -1,6 +1,6 @@
 from .client import ClientCLI
 from .server import ServerCLI
-from wireconf.config.database_config import VerifyDatabase
+from wireconf.config.database import VerifyDatabase
 from argparse import ArgumentParser
 import sys
 
