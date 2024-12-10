@@ -29,25 +29,17 @@ class CMD:
 
     def wg_restart(self, func):
         def wrapper(*args, **kwargs):
-            try:
-                name = WireguardRepository.get_interface_name(self.__conn)
-                if not name:
-                    raise exeptions.NoKeysFountError()
+            """ wg_quick_down = run(['wg-quick', 'down', name], capture_output=True)
+            if wg_quick_down.returncode > 0:
+                print(wg_quick_down.stderr.decode())
+                sys.exit(1) """
 
-                """ wg_quick_down = run(['wg-quick', 'down', name], capture_output=True)
-                if wg_quick_down.returncode > 0:
-                    print(wg_quick_down.stderr.decode())
-                    sys.exit(1) """
+            action = func(*args, **kwargs)
 
-                action = func(*args, **kwargs)
+            """ wg_quick_up = run(['wg-quick', 'up', name], capture_output=True)
+            if wg_quick_up.returncode > 0:
+                print(wg_quick_up.stderr.decode())
+                sys.exit(1) """
 
-                """ wg_quick_up = run(['wg-quick', 'up', name], capture_output=True)
-                if wg_quick_up.returncode > 0:
-                    print(wg_quick_up.stderr.decode())
-                    sys.exit(1) """
-
-                return action
-            except exeptions.NoKeysFountError as e:
-                print(e)        
-                sys.exit(1)
+            return action
         return wrapper

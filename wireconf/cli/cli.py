@@ -3,6 +3,7 @@ from .server import ServerCLI
 from wireconf.config.database import VerifyDatabase
 from argparse import ArgumentParser
 from wireconf.internal.cmd import CMD
+from wireconf.internal.validators import Valitador
 import sys
 
 
@@ -13,6 +14,7 @@ class CLI:
     __client_cli = ClientCLI(__conn)
     __server_cli = ServerCLI(__conn)
     __cmd = CMD(__conn)
+    __validator = Valitador(__conn)
 
     @classmethod
     def verify_args(cls, parser: ArgumentParser, args: any) -> bool:
@@ -69,6 +71,7 @@ class CLI:
         return True
 
     @classmethod
+    @__validator.validate_server_keys
     @__cmd.wg_restart
     def add_new_peer(cls, peer_name: str = None) -> bool:
         if peer_name is None:
@@ -89,27 +92,19 @@ class CLI:
         return True
 
     @classmethod
+    @__validator.validate_exists_peer
     def get_peer_conf(cls, peer_name: str = None, qr: bool = False, output: bool = False) -> bool:
         if peer_name is None:
             return False
 
-        result =  cls.__client_cli.get_peer_conf(peer_name, qr, output)
-        if result.get('error'):
-            print(result.get('error'))
-            sys.exit(1)
-            return False
-
+        cls.__client_cli.get_peer_conf(peer_name, qr, output)
         return True
 
     @classmethod
+    @__validator.validate_length_peers
     def list_all_peers(cls, list: bool = False) -> bool:
         if list is False:
             return False
 
-        result = cls.__client_cli.get_all_peers()
-        if result.get('error'):
-            print(result.get('error'))
-            sys.exit(1)
-            return False
-
+        cls.__client_cli.get_all_peers()
         return True

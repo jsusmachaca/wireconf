@@ -124,3 +124,14 @@ class WireguardRepository:
             return row[0]
         except Exception:
             return ''
+    
+    @staticmethod
+    def list_peers(conn: sqlite3.Connection):
+        try:
+            cur = conn.cursor()
+            cur.execute('SELECT name FROM peers;')
+            peers = cur.fetchall()
+
+            return peers
+        except Exception as e:
+            return []
