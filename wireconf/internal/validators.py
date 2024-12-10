@@ -34,7 +34,7 @@ class Valitador:
                 exit(1)
         return wrapper
 
-    def validate_exists_peer(self, func):
+    def validate_not_exists_peer(self, func):
         def wrapper(*args, **kwargs):
             try:
                 file = self.__wg.get_peer_file(args[1])
@@ -45,7 +45,7 @@ class Valitador:
                 print('The peer you are trying to obtain does not exist')
                 exit(1)
         return wrapper
-    
+
     def validate_length_peers(self, func):
         def wrapper(*args, **kwargs):
             try:
@@ -54,6 +54,18 @@ class Valitador:
                     raise exeptions.NoPeersToListExeption()
                 return func(*args, **kwargs)
             except exeptions.NoPeersToListExeption as e:
+                print(e)
+                exit(1)
+        return wrapper
+
+    def validate_alredy_exists_peer(self, func):
+        def wrapper(*args, **kwargs):
+            try:
+                peer = WireguardRepository.is_exists_peer(self.__conn, args[1])
+                if peer:
+                    raise exeptions.PeerAlredyExistsError(args[1])
+                return func(*args, **kwargs)
+            except exeptions.PeerAlredyExistsError as e:
                 print(e)
                 exit(1)
         return wrapper

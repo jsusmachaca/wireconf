@@ -72,27 +72,18 @@ class CLI:
 
     @classmethod
     @__validator.validate_server_keys
+    @__validator.validate_alredy_exists_peer
     @__cmd.wg_restart
     def add_new_peer(cls, peer_name: str = None) -> bool:
         if peer_name is None:
             return False
 
-        peer_result = cls.__server_cli.add_peer_in_server(peer_name)
-        if peer_result.get('error'):
-            print(peer_result.get('error'))
-            sys.exit(1)
-            return False
-
-        client_result = cls.__client_cli.create_peer(peer_name)
-        if client_result.get('error'):
-                print(client_result.get('error'))
-                sys.exit(1)
-                return False
-
+        cls.__server_cli.add_peer_in_server(peer_name)
+        cls.__client_cli.create_peer(peer_name)
         return True
 
     @classmethod
-    @__validator.validate_exists_peer
+    @__validator.validate_not_exists_peer
     def get_peer_conf(cls, peer_name: str = None, qr: bool = False, output: bool = False) -> bool:
         if peer_name is None:
             return False

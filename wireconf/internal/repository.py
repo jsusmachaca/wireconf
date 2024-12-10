@@ -135,3 +135,15 @@ class WireguardRepository:
             return peers
         except Exception as e:
             return []
+
+    @staticmethod
+    def is_exists_peer(conn: sqlite3.Connection, peer_name: str):
+        try:
+            cur = conn.cursor()
+            cur.execute('SELECT name FROM peers WHERE name=?;', [peer_name])
+            peer = cur.fetchone()
+            if peer is None:
+                raise
+            return peer[0]
+        except Exception as e:
+            return ''

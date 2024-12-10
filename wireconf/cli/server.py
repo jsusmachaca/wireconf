@@ -55,21 +55,11 @@ class ServerCLI:
             return { 'error': e }
 
     def add_peer_in_server(self, peer_name: str) -> dict[str, any]:
-        try:
-            server_name, _, _ = self.__repository.get_server_data()
-            if not server_name:
-                raise exeptions.NoKeysFountError()
+        server_name, _, _ = self.__repository.get_server_data()
 
-            priv_key, pub_key = CMD.generate_keys()
-            result = self.__repository.insert_peer_key(peer_name, priv_key, pub_key)
+        priv_key, pub_key = CMD.generate_keys()
+        self.__repository.insert_peer_key(peer_name, priv_key, pub_key)
 
-            if not result:
-                raise exeptions.PeerAlredyExistsError(peer_name)
-
-            ip_address, _, public_key = self.__repository.get_peer_keys(peer_name)
-            self.__wg.server_file_peer(server_name, public_key, ip_address)
-            return { 'success': True }
-        except exeptions.NoKeysFountError as e:
-            return { 'error': e }
-        except exeptions.PeerAlredyExistsError as e:
-            return { 'error': e }
+        ip_address, _, public_key = self.__repository.get_peer_keys(peer_name)
+        self.__wg.server_file_peer(server_name, public_key, ip_address)
+        return { 'success': True }
