@@ -1,6 +1,5 @@
 from wireconf.internal.repository import WireguardRepository
 from wireconf.internal.files import WireguardFile
-from wireconf.config import exeptions
 from pygments.lexers.web import JsonLexer
 from pygments.lexers.text import IniLexer
 from pygments import highlight

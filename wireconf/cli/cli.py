@@ -46,27 +46,15 @@ class CLI:
 
     @classmethod
     @__cmd.wg_start
+    @__validator.validate_alredy_exists_server
+    @__validator.validate_alredy_existe_file
     def init(cls, server_name: str = None, peer_name: str = None, address: str = None, port: int = None) -> bool:
         if server_name is None:
             return False
 
-        server_result = cls.__server_cli.create_server(server_name, address, port)
-        if server_result.get('error'):
-            print(server_result.get('error'))
-            sys.exit(1)
-            return False
-
-        peer_result = cls.__server_cli.add_peer_in_server(peer_name)
-        if peer_result.get('error'):
-            print(peer_result.get('error'))
-            sys.exit(1)
-            return False
-
-        client_result = cls.__client_cli.create_peer(peer_name)
-        if client_result.get('error'):
-            print(client_result.get('error'))
-            sys.exit(1)
-            return False
+        cls.__server_cli.create_server(server_name, address, port) 
+        cls.__server_cli.add_peer_in_server(peer_name)
+        cls.__client_cli.create_peer(peer_name)
 
         return True
 
